@@ -21,7 +21,7 @@ const DEFAULT_DATA: MCQData = {
     height: 220,
     width: 100,
     crop: { x: 0, y: 0 },
-    zoom: 0,
+    zoom: 1,
     croppedArea: { x: 0, y: 0, width: 100, height: 100 }
   },
   fontSettings: {
@@ -843,10 +843,10 @@ export default function App() {
               initial={{ opacity: 0, scale: 0.95, y: 30 }}
               animate={{ opacity: 1, scale: 1, y: 0 }}
               exit={{ opacity: 0, scale: 0.95, y: 30 }}
-              className="relative bg-white w-full max-w-2xl h-full max-h-[85vh] sm:h-[640px] rounded-[2rem] sm:rounded-[3rem] overflow-hidden flex flex-col shadow-2xl border border-white/20 mx-auto"
+              className="relative bg-white w-full max-w-2xl h-full max-h-[85vh] sm:h-[600px] rounded-2xl overflow-hidden flex flex-col shadow-2xl border border-white/20 mx-auto"
               onClick={(e) => e.stopPropagation()}
             >
-              <div className="p-4 sm:p-7 border-b border-slate-100 flex items-center justify-between bg-slate-50/50">
+              <div className="px-4 py-3 sm:px-6 sm:py-4 border-b border-slate-100 flex items-center justify-between bg-slate-50/50">
                 <div className="flex items-center gap-2 sm:gap-3">
                    <div className="bg-blue-600 p-1.5 sm:p-2 rounded-xl"><ImageIcon className="w-4 h-4 sm:w-5 sm:h-5 text-white" /></div>
                    <h3 className="text-base sm:text-xl font-extrabold text-slate-800 tracking-tight">Calibration</h3>
@@ -874,24 +874,24 @@ export default function App() {
                 />
               </div>
 
-              <div className="p-5 sm:p-8 bg-slate-50 border-t border-slate-100 space-y-4 sm:space-y-6">
-                <div className="space-y-3 sm:space-y-4">
+              <div className="px-4 py-3 sm:px-6 sm:py-4 bg-slate-50 border-t border-slate-100 space-y-3 sm:space-y-4">
+                <div className="space-y-2 sm:space-y-3">
                   <div className="flex justify-between items-end">
-                    <span className="text-[8px] sm:text-[10px] font-black text-slate-400 uppercase tracking-widest">Focus Level</span>
-                    <span className="text-sm sm:text-lg font-black text-blue-600">{Math.round((data.imageSettings.zoom || 1) * 100)}%</span>
+                    <span className="text-[7px] sm:text-[9px] font-black text-slate-400 uppercase tracking-widest">Focus Level</span>
+                    <span className="text-xs sm:text-base font-black text-blue-600">{Math.round((data.imageSettings.zoom || 1) * 100)}%</span>
                   </div>
                   <input
                     type="range" min="-2" max="2" step={0.01}
                     value={Math.log2(data.imageSettings.zoom || 1)}
                     onChange={(e) => onZoomChange(parseFloat(e.target.value))}
-                    className="w-full h-2 sm:h-3 bg-slate-200 rounded-full appearance-none cursor-pointer accent-blue-600"
+                    className="w-full h-1.5 sm:h-2 bg-slate-200 rounded-full appearance-none cursor-pointer accent-blue-600"
                   />
                 </div>
                 <button 
                   onClick={() => setIsCropping(false)}
-                  className="w-full bg-slate-900 text-white py-3 sm:py-5 rounded-xl sm:rounded-2xl font-black text-sm sm:text-lg flex items-center justify-center gap-2 sm:gap-3 shadow-2xl hover:bg-black transition-all active:scale-95"
+                  className="w-full bg-slate-900 text-white py-2 sm:py-3 rounded-lg font-black text-xs sm:text-sm flex items-center justify-center gap-1.5 sm:gap-2 shadow-lg hover:bg-black transition-all active:scale-95"
                 >
-                  <Check className="w-4 h-4 sm:w-6 sm:h-6" />
+                  <Check className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
                   CONFIRM
                 </button>
               </div>
