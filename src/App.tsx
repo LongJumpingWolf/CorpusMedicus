@@ -807,8 +807,14 @@ export default function App() {
                                 >
                                   <span className="font-black text-black shrink-0 mt-0.5" style={{ fontSize: `${data.fontSettings.optionSize}px` }}>{key}.</span>
                                   <span 
-                                    className="font-bold text-slate-900 break-words flex-1 leading-tight"
-                                    style={{ fontSize: `${data.fontSettings.optionSize}px` }}
+                                    className="font-bold text-slate-900 flex-1 leading-tight"
+                                    style={{ 
+                                      fontSize: `${data.fontSettings.optionSize}px`,
+                                      wordWrap: 'break-word',
+                                      overflowWrap: 'break-word',
+                                      wordBreak: 'break-word',
+                                      minWidth: 0
+                                    }}
                                   >
                                     {value}
                                   </span>
