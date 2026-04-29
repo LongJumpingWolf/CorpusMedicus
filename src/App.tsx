@@ -864,6 +864,7 @@ export default function App() {
                   onZoomChange={onZoomChange}
                   showGrid={false}
                   objectFit="cover"
+                  restrictPosition={false}
                   classes={{
                     containerClassName: "cropper-container"
                   }}
