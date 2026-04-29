@@ -21,7 +21,7 @@ const DEFAULT_DATA: MCQData = {
     height: 220,
     width: 100,
     crop: { x: 0, y: 0 },
-    zoom: 0.5,
+    zoom: 0,
     croppedArea: { x: 0, y: 0, width: 100, height: 100 }
   },
   fontSettings: {
@@ -134,10 +134,13 @@ export default function App() {
     }));
   };
 
-  const onZoomChange = (zoom: number) => {
+  const onZoomChange = (zoomLevel: number) => {
+    // Convert centered slider value (-2 to 2) to actual zoom multiplier (0.5 to 4)
+    // 0 = 1x (100%), negative = zoom out, positive = zoom in
+    const zoomMultiplier = Math.pow(2, zoomLevel);
     setData(prev => ({
       ...prev,
-      imageSettings: { ...prev.imageSettings, zoom }
+      imageSettings: { ...prev.imageSettings, zoom: zoomMultiplier }
     }));
   };
 
@@ -875,11 +878,11 @@ export default function App() {
                 <div className="space-y-3 sm:space-y-4">
                   <div className="flex justify-between items-end">
                     <span className="text-[8px] sm:text-[10px] font-black text-slate-400 uppercase tracking-widest">Focus Level</span>
-                    <span className="text-sm sm:text-lg font-black text-blue-600">{Math.round((data.imageSettings.zoom || 0.5) * 100)}%</span>
+                    <span className="text-sm sm:text-lg font-black text-blue-600">{Math.round((data.imageSettings.zoom || 1) * 100)}%</span>
                   </div>
                   <input
-                    type="range" min="0.3" max="4" step={0.01}
-                    value={data.imageSettings.zoom || 0.5}
+                    type="range" min="-2" max="2" step={0.01}
+                    value={Math.log2(data.imageSettings.zoom || 1)}
                     onChange={(e) => onZoomChange(parseFloat(e.target.value))}
                     className="w-full h-2 sm:h-3 bg-slate-200 rounded-full appearance-none cursor-pointer accent-blue-600"
                   />
