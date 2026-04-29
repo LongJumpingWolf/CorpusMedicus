@@ -310,18 +310,18 @@ export default function App() {
                 <h2 className="text-lg font-bold">Content & Style</h2>
               </div>
 
-              <div className="space-y-6">
+              <div className="space-y-4">
                 
                 {/* 1. Color Palette (NEW TOP POSITION) */}
-                <div className="bg-slate-50/50 p-5 rounded-3xl border border-slate-100 space-y-4">
-                  <div className="flex items-center justify-between mb-2">
+                <div className="bg-slate-50/50 p-3 rounded-2xl border border-slate-100 space-y-3">
+                  <div className="flex items-center justify-between">
                     <span className="text-xs font-bold uppercase text-slate-500 tracking-wider font-mono">1. Background Color</span>
                     <Palette className="w-4 h-4 text-slate-400" />
                   </div>
                   
-                  <div className="flex gap-4 items-center">
+                  <div className="flex gap-3 items-center">
                     <div 
-                      className="w-14 h-14 rounded-full border-2 border-slate-200 shadow-sm relative overflow-hidden shrink-0 group hover:border-blue-500 hover:scale-105 transition-all cursor-pointer"
+                      className="w-12 h-12 rounded-full border-2 border-slate-200 shadow-sm relative overflow-hidden shrink-0 group hover:border-blue-500 hover:scale-105 transition-all cursor-pointer"
                       style={{ backgroundColor: data.backgroundColor }}
                     >
                       <input 
@@ -331,24 +331,24 @@ export default function App() {
                         className="absolute inset-[-10px] w-[calc(100%+20px)] h-[calc(100%+20px)] cursor-pointer opacity-0"
                       />
                     </div>
-                    <div className="flex-1 flex gap-2">
+                    <div className="flex-1 flex gap-1.5">
                       <input 
                         type="text" 
                         value={newPresetName}
                         onChange={(e) => setNewPresetName(e.target.value)}
-                        className="flex-1 bg-white border border-slate-200 rounded-xl px-4 py-2 text-sm"
+                        className="flex-1 bg-white border border-slate-200 rounded-lg px-3 py-1.5 text-xs"
                         placeholder="Save as Preset..."
                       />
                       <button 
                         onClick={savePreset}
-                        className="bg-slate-900 text-white p-2 rounded-xl hover:bg-slate-800"
+                        className="bg-slate-900 text-white p-1.5 rounded-lg hover:bg-slate-800"
                       >
-                        <Plus className="w-5 h-5" />
+                        <Plus className="w-4 h-4" />
                       </button>
                     </div>
                   </div>
 
-                  <div className="flex flex-wrap gap-2 pt-2">
+                  <div className="flex flex-wrap gap-1.5">
                     {data.presets.map(p => (
                       <div 
                         key={p.id}
@@ -375,33 +375,33 @@ export default function App() {
 
                 {/* 2. Header Title */}
                 <div>
-                  <label className="block text-xs font-bold uppercase text-slate-500 mb-2 tracking-wider font-mono">2. Header Title</label>
+                  <label className="block text-xs font-bold uppercase text-slate-500 mb-1.5 tracking-wider font-mono">2. Header Title</label>
                   <input
                     type="text"
                     value={data.title}
                     onChange={(e) => setData({ ...data, title: e.target.value })}
-                    className="w-full bg-slate-50 border border-slate-200 rounded-2xl px-5 py-3.5 font-medium"
+                    className="w-full bg-slate-50 border border-slate-200 rounded-lg px-4 py-2.5 font-medium text-sm"
                     placeholder="MCQ Title..."
                   />
                 </div>
 
                 {/* 3. Image Section */}
-                <div className="bg-slate-50/50 p-5 rounded-3xl border border-slate-100 space-y-4">
-                  <label className="block text-xs font-bold uppercase text-slate-500 mb-2 tracking-wider font-mono">3. Image Material</label>
+                <div className="bg-slate-50/50 p-3 rounded-2xl border border-slate-100 space-y-3">
+                  <label className="block text-xs font-bold uppercase text-slate-500 tracking-wider font-mono">3. Image Material</label>
                   {!data.imageUrl ? (
                     <div 
-                      className="border-2 border-dashed border-slate-200 rounded-2xl p-6 flex flex-col items-center justify-center gap-3 cursor-pointer hover:border-blue-400 hover:bg-blue-50/50 transition-all bg-white"
+                      className="border-2 border-dashed border-slate-200 rounded-lg p-4 flex flex-col items-center justify-center gap-2 cursor-pointer hover:border-blue-400 hover:bg-blue-50/50 transition-all bg-white"
                       onClick={() => fileInputRef.current?.click()}
                     >
-                      <ImageIcon className="w-6 h-6 text-slate-300" />
+                      <ImageIcon className="w-5 h-5 text-slate-300" />
                       <p className="text-xs font-bold text-slate-500">Upload or Paste</p>
                       <input ref={fileInputRef} type="file" accept="image/*" className="hidden" onChange={handleImageChange} />
                     </div>
                   ) : (
-                    <div className="space-y-4">
-                      <div className="grid grid-cols-2 gap-4">
+                    <div className="space-y-2.5">
+                      <div className="grid grid-cols-2 gap-3">
                          <div>
-                            <label className="block text-[10px] font-bold text-slate-400 uppercase mb-1">Height</label>
+                            <label className="block text-[9px] font-bold text-slate-400 uppercase mb-1">Height</label>
                             <input 
                               type="range" min="80" max="400"
                               value={data.imageSettings.height}
@@ -436,19 +436,19 @@ export default function App() {
 
                 {/* 4. Question Text */}
                 <div>
-                  <label className="block text-xs font-bold uppercase text-slate-500 mb-2 tracking-wider font-mono">4. Question Text</label>
+                  <label className="block text-xs font-bold uppercase text-slate-500 mb-1.5 tracking-wider font-mono">4. Question Text</label>
                   <textarea
                     value={data.question}
                     onChange={(e) => setData({ ...data, question: e.target.value })}
-                    className="w-full bg-slate-50 border border-slate-200 rounded-2xl px-5 py-4 min-h-[120px] font-medium resize-none"
+                    className="w-full bg-slate-50 border border-slate-200 rounded-lg px-4 py-3 min-h-[100px] font-medium text-sm resize-none"
                     placeholder="Enter question details..."
                   />
                 </div>
 
                 {/* 5. Answer Options */}
-                <div className="space-y-4">
-                  <label className="block text-xs font-bold uppercase text-slate-500 mb-2 tracking-wider font-mono">5. Answer Options</label>
-                  <div className="space-y-3">
+                <div className="space-y-2.5">
+                  <label className="block text-xs font-bold uppercase text-slate-500 tracking-wider font-mono">5. Answer Options</label>
+                  <div className="space-y-2">
                     {Object.entries(data.options).map(([key, value]) => (
                       <div key={key} className="flex gap-3 items-center group">
                         <div className="bg-slate-900 text-white w-9 h-9 rounded-xl flex items-center justify-center font-black text-sm shrink-0 shadow-sm">
@@ -467,13 +467,13 @@ export default function App() {
                 </div>
 
                 {/* Typography & Layout Settings */}
-                <div className="bg-slate-50/50 p-5 rounded-3xl border border-slate-100 space-y-5">
+                <div className="bg-slate-50/50 p-3 rounded-2xl border border-slate-100 space-y-3">
                   <div className="flex items-center justify-between">
                     <span className="text-xs font-bold uppercase text-slate-500 tracking-wider font-mono">Styling & Watermark</span>
                     <Type className="w-4 h-4 text-slate-400" />
                   </div>
                   
-                  <div className="space-y-4">
+                  <div className="space-y-3">
                     {/* Font Family */}
                     <div>
                       <label className="block text-[10px] font-bold text-slate-400 uppercase mb-1">Font Family</label>
@@ -486,10 +486,10 @@ export default function App() {
                       </select>
                     </div>
 
-                    <div className="grid grid-cols-2 gap-4">
+                    <div className="grid grid-cols-2 gap-3">
                       {/* Q Size */}
                       <div>
-                        <label className="block text-[10px] font-bold text-slate-400 uppercase mb-1">Qn Size</label>
+                        <label className="block text-[9px] font-bold text-slate-400 uppercase mb-1">Qn Size</label>
                         <input
                           type="number"
                           value={data.fontSettings.questionSize}
