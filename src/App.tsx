@@ -1,6 +1,6 @@
 import React, { useState, useRef, ChangeEvent, useEffect, useCallback } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
-import { Image as ImageIcon, Plus, Trash2, Layout, Smartphone, Share2, Download, Clipboard, Palette, Check, X, Type, ChevronLeft, Search, Heart, MessageCircle, Send, MoreHorizontal } from 'lucide-react';
+import { Image as ImageIcon, Plus, Trash2, Layout, Smartphone, Share2, Download, Clipboard, Palette, Check, X, Type, ChevronLeft, Search, Heart, MessageCircle, Send, MoreHorizontal, Bold, Italic, Underline } from 'lucide-react';
 import { toPng } from 'html-to-image';
 import Cropper from 'react-easy-crop';
 import { MCQData, ColorPreset } from './types';
@@ -29,7 +29,13 @@ const DEFAULT_DATA: MCQData = {
     questionSize: '18',
     optionSize: '16',
     optionPadding: 12,
-    optionGap: 14
+    optionGap: 14,
+    questionLineHeight: 1.5,
+    questionFormatting: {
+      bold: [],
+      italic: [],
+      underline: []
+    }
   },
   watermark: {
     text: 'EDUCATION SERIES',
@@ -437,6 +443,59 @@ export default function App() {
                 {/* 4. Question Text */}
                 <div>
                   <label className="block text-xs font-bold uppercase text-slate-500 mb-1.5 tracking-wider font-mono">4. Question Text</label>
+                  
+                  {/* Formatting Toolbar */}
+                  <div className="flex gap-1.5 mb-2">
+                    <button
+                      onClick={() => setData(prev => ({
+                        ...prev,
+                        fontSettings: { ...prev.fontSettings, questionFormatting: { ...prev.fontSettings.questionFormatting, bold: prev.fontSettings.questionFormatting.bold.length > 0 ? [] : [{ start: 0, end: prev.question.length }] } }
+                      }))}
+                      className={`p-1.5 rounded-lg border transition-all ${data.fontSettings.questionFormatting.bold.length > 0 ? 'bg-blue-100 border-blue-400' : 'bg-white border-slate-200 hover:border-slate-300'}`}
+                      title="Bold"
+                    >
+                      <Bold className="w-4 h-4" />
+                    </button>
+                    <button
+                      onClick={() => setData(prev => ({
+                        ...prev,
+                        fontSettings: { ...prev.fontSettings, questionFormatting: { ...prev.fontSettings.questionFormatting, italic: prev.fontSettings.questionFormatting.italic.length > 0 ? [] : [{ start: 0, end: prev.question.length }] } }
+                      }))}
+                      className={`p-1.5 rounded-lg border transition-all ${data.fontSettings.questionFormatting.italic.length > 0 ? 'bg-blue-100 border-blue-400' : 'bg-white border-slate-200 hover:border-slate-300'}`}
+                      title="Italic"
+                    >
+                      <Italic className="w-4 h-4" />
+                    </button>
+                    <button
+                      onClick={() => setData(prev => ({
+                        ...prev,
+                        fontSettings: { ...prev.fontSettings, questionFormatting: { ...prev.fontSettings.questionFormatting, underline: prev.fontSettings.questionFormatting.underline.length > 0 ? [] : [{ start: 0, end: prev.question.length }] } }
+                      }))}
+                      className={`p-1.5 rounded-lg border transition-all ${data.fontSettings.questionFormatting.underline.length > 0 ? 'bg-blue-100 border-blue-400' : 'bg-white border-slate-200 hover:border-slate-300'}`}
+                      title="Underline"
+                    >
+                      <Underline className="w-4 h-4" />
+                    </button>
+                  </div>
+
+                  {/* Line Spacing Control */}
+                  <div className="mb-2 flex items-center gap-3">
+                    <label className="text-[9px] font-bold text-slate-400 uppercase">Line Spacing</label>
+                    <input
+                      type="range"
+                      min="1"
+                      max="2.5"
+                      step="0.1"
+                      value={data.fontSettings.questionLineHeight}
+                      onChange={(e) => setData({
+                        ...data,
+                        fontSettings: { ...data.fontSettings, questionLineHeight: parseFloat(e.target.value) }
+                      })}
+                      className="flex-1 h-1.5 bg-slate-200 rounded-full appearance-none cursor-pointer accent-blue-600"
+                    />
+                    <span className="text-xs font-bold text-blue-600 min-w-[35px]">{data.fontSettings.questionLineHeight.toFixed(1)}</span>
+                  </div>
+
                   <textarea
                     value={data.question}
                     onChange={(e) => setData({ ...data, question: e.target.value })}
@@ -789,8 +848,16 @@ export default function App() {
       
                           <div className="flex-1 flex flex-col">
                             <p 
-                              className="font-bold text-black mb-6 leading-snug whitespace-pre-wrap flex-none"
-                              style={{ fontSize: `${data.fontSettings.questionSize}px` }}
+                              className="font-bold text-black mb-6 whitespace-pre-wrap flex-none"
+                              style={{ 
+                                fontSize: `${data.fontSettings.questionSize}px`,
+                                lineHeight: data.fontSettings.questionLineHeight,
+                                fontWeight: data.fontSettings.questionFormatting.bold.length > 0 ? 'bold' : 'normal',
+                                fontStyle: data.fontSettings.questionFormatting.italic.length > 0 ? 'italic' : 'normal',
+                                textDecoration: data.fontSettings.questionFormatting.underline.length > 0 ? 'underline' : 'none',
+                                textDecorationThickness: '2px',
+                                textUnderlineOffset: '4px'
+                              }}
                             >
                               {data.question}
                             </p>
