@@ -1,6 +1,6 @@
 import React, { useState, useRef, ChangeEvent, useEffect, useCallback } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
-import { Image as ImageIcon, Plus, Trash2, Layout, Smartphone, Share2, Download, Clipboard, Palette, Check, X, Type, ChevronLeft, Search, Heart, MessageCircle, Send, MoreHorizontal, Bold, Italic, Underline } from 'lucide-react';
+import { Image as ImageIcon, Plus, Trash2, Layout, Smartphone, Share2, Download, Clipboard, Palette, Check, X, Type, ChevronLeft, Search, Heart, MessageCircle, Send, MoreHorizontal } from 'lucide-react';
 import { toPng } from 'html-to-image';
 import Cropper from 'react-easy-crop';
 import { MCQData, ColorPreset } from './types';
@@ -30,12 +30,7 @@ const DEFAULT_DATA: MCQData = {
     optionSize: '16',
     optionPadding: 12,
     optionGap: 14,
-    questionLineHeight: 1.5,
-    questionFormatting: {
-      bold: [],
-      italic: [],
-      underline: []
-    }
+    questionLineHeight: 1.5
   },
   watermark: {
     text: 'EDUCATION SERIES',
@@ -113,7 +108,6 @@ export default function App() {
 
   const fileInputRef = useRef<HTMLInputElement>(null);
   const captureRef = useRef<HTMLDivElement>(null);
-  const questionTextareaRef = useRef<HTMLTextAreaElement>(null);
 
   const handleImageChange = (e: ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -445,79 +439,6 @@ export default function App() {
                 <div>
                   <label className="block text-xs font-bold uppercase text-slate-500 mb-1.5 tracking-wider font-mono">4. Question Text</label>
                   
-                  {/* Formatting Toolbar */}
-                  <div className="flex gap-1.5 mb-2">
-                    <button
-                      onClick={() => {
-                        if (!questionTextareaRef.current) return;
-                        const start = questionTextareaRef.current.selectionStart;
-                        const end = questionTextareaRef.current.selectionEnd;
-                        if (start === end) return; // No selection
-                        
-                        setData(prev => ({
-                          ...prev,
-                          fontSettings: { 
-                            ...prev.fontSettings, 
-                            questionFormatting: { 
-                              ...prev.fontSettings.questionFormatting, 
-                              bold: [...prev.fontSettings.questionFormatting.bold, { start, end }]
-                            } 
-                          }
-                        }));
-                      }}
-                      className="p-1.5 rounded-lg border bg-white border-slate-200 hover:border-slate-300 transition-all"
-                      title="Bold"
-                    >
-                      <Bold className="w-4 h-4" />
-                    </button>
-                    <button
-                      onClick={() => {
-                        if (!questionTextareaRef.current) return;
-                        const start = questionTextareaRef.current.selectionStart;
-                        const end = questionTextareaRef.current.selectionEnd;
-                        if (start === end) return; // No selection
-                        
-                        setData(prev => ({
-                          ...prev,
-                          fontSettings: { 
-                            ...prev.fontSettings, 
-                            questionFormatting: { 
-                              ...prev.fontSettings.questionFormatting, 
-                              italic: [...prev.fontSettings.questionFormatting.italic, { start, end }]
-                            } 
-                          }
-                        }));
-                      }}
-                      className="p-1.5 rounded-lg border bg-white border-slate-200 hover:border-slate-300 transition-all"
-                      title="Italic"
-                    >
-                      <Italic className="w-4 h-4" />
-                    </button>
-                    <button
-                      onClick={() => {
-                        if (!questionTextareaRef.current) return;
-                        const start = questionTextareaRef.current.selectionStart;
-                        const end = questionTextareaRef.current.selectionEnd;
-                        if (start === end) return; // No selection
-                        
-                        setData(prev => ({
-                          ...prev,
-                          fontSettings: { 
-                            ...prev.fontSettings, 
-                            questionFormatting: { 
-                              ...prev.fontSettings.questionFormatting, 
-                              underline: [...prev.fontSettings.questionFormatting.underline, { start, end }]
-                            } 
-                          }
-                        }));
-                      }}
-                      className="p-1.5 rounded-lg border bg-white border-slate-200 hover:border-slate-300 transition-all"
-                      title="Underline"
-                    >
-                      <Underline className="w-4 h-4" />
-                    </button>
-                  </div>
-
                   {/* Line Spacing Control */}
                   <div className="mb-2 flex items-center gap-3">
                     <label className="text-[9px] font-bold text-slate-400 uppercase">Line Spacing</label>
@@ -537,11 +458,10 @@ export default function App() {
                   </div>
 
                   <textarea
-                    ref={questionTextareaRef}
                     value={data.question}
                     onChange={(e) => setData({ ...data, question: e.target.value })}
                     className="w-full bg-slate-50 border border-slate-200 rounded-lg px-4 py-3 min-h-[100px] font-medium text-sm resize-none"
-                    placeholder="Enter question details..."
+                    placeholder="Use markdown: *bold* _italic_ ~underline~"
                   />
                 </div>
 
@@ -897,45 +817,52 @@ export default function App() {
                             >
                               {(() => {
                                 const text = data.question;
-                                if (text.length === 0) return text;
+                                const parts = [];
+                                let lastIndex = 0;
                                 
-                                // Build array of formatting for each character
-                                const charFormats = Array(text.length).fill(null).map((_, i) => ({
-                                  bold: data.fontSettings.questionFormatting.bold.some(r => i >= r.start && i < r.end),
-                                  italic: data.fontSettings.questionFormatting.italic.some(r => i >= r.start && i < r.end),
-                                  underline: data.fontSettings.questionFormatting.underline.some(r => i >= r.start && i < r.end)
-                                }));
+                                // Parse markdown: *bold* _italic_ ~underline~
+                                const patterns = [
+                                  { regex: /\*([^*]+)\*/g, style: { fontWeight: 'bold' } },
+                                  { regex: /_([^_]+)_/g, style: { fontStyle: 'italic' } },
+                                  { regex: /~([^~]+)~/g, style: { textDecoration: 'underline', textDecorationThickness: '2px', textUnderlineOffset: '4px' } }
+                                ];
                                 
-                                // Create segments with same formatting
-                                const segments = [];
-                                let current = { start: 0, ...charFormats[0] };
+                                let modifiedText = text;
+                                const replacements = [];
                                 
-                                for (let i = 1; i <= text.length; i++) {
-                                  const isSame = i < text.length && 
-                                    charFormats[i].bold === current.bold && 
-                                    charFormats[i].italic === current.italic && 
-                                    charFormats[i].underline === current.underline;
-                                  
-                                  if (!isSame) {
-                                    segments.push({ ...current, end: i });
-                                    if (i < text.length) {
-                                      current = { start: i, ...charFormats[i] };
-                                    }
+                                patterns.forEach(({ regex, style }) => {
+                                  let match;
+                                  const localRegex = new RegExp(regex.source, 'g');
+                                  while ((match = localRegex.exec(text)) !== null) {
+                                    replacements.push({
+                                      start: match.index,
+                                      end: match.index + match[0].length,
+                                      content: match[1],
+                                      style
+                                    });
                                   }
+                                });
+                                
+                                // Sort replacements by position
+                                replacements.sort((a, b) => a.start - b.start);
+                                
+                                // Build segments
+                                let current = 0;
+                                replacements.forEach(replacement => {
+                                  if (current < replacement.start) {
+                                    parts.push({ text: text.slice(current, replacement.start), style: {} });
+                                  }
+                                  parts.push({ text: replacement.content, style: replacement.style });
+                                  current = replacement.end;
+                                });
+                                
+                                if (current < text.length) {
+                                  parts.push({ text: text.slice(current), style: {} });
                                 }
                                 
-                                return segments.map((seg, idx) => (
-                                  <span 
-                                    key={idx}
-                                    style={{
-                                      fontWeight: seg.bold ? 'bold' : 'normal',
-                                      fontStyle: seg.italic ? 'italic' : 'normal',
-                                      textDecoration: seg.underline ? 'underline' : 'none',
-                                      textDecorationThickness: '2px',
-                                      textUnderlineOffset: '4px'
-                                    }}
-                                  >
-                                    {text.slice(seg.start, seg.end)}
+                                return parts.length === 0 ? text : parts.map((part, idx) => (
+                                  <span key={idx} style={part.style}>
+                                    {part.text}
                                   </span>
                                 ));
                               })()}
