@@ -304,14 +304,14 @@ export default function App() {
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-10 items-start">
           
           {/* Left Column: Editor */}
-          <div className="lg:col-span-5 space-y-6">
-            <section className="bg-white p-6 rounded-3xl shadow-sm border border-slate-200 space-y-6">
-              <div className="flex items-center gap-2 pb-4 border-b border-slate-100">
+          <div className="lg:col-span-5">
+            <section className="bg-white rounded-3xl shadow-sm border border-slate-200 flex flex-col h-full">
+              <div className="flex items-center gap-2 p-6 pb-4 border-b border-slate-100 sticky top-0 bg-white rounded-t-3xl">
                 <Layout className="w-5 h-5 text-blue-600" />
                 <h2 className="text-lg font-bold">Content & Style</h2>
               </div>
 
-              <div className="space-y-4">
+              <div className="overflow-y-auto flex-1 p-6 space-y-4">
                 
                 {/* 1. Color Palette (NEW TOP POSITION) */}
                 <div className="bg-slate-50/50 p-3 rounded-2xl border border-slate-100 space-y-3">
@@ -460,7 +460,7 @@ export default function App() {
                   <textarea
                     value={data.question}
                     onChange={(e) => setData({ ...data, question: e.target.value })}
-                    className="w-full bg-slate-50 border border-slate-200 rounded-lg px-4 py-3 min-h-[100px] font-medium text-sm resize-none"
+                    className="w-full bg-slate-50 border border-slate-200 rounded-lg px-4 py-3 min-h-[100px] font-medium text-sm resize-vertical"
                     placeholder="Use markdown: *bold* _italic_ ~underline~"
                   />
                 </div>
