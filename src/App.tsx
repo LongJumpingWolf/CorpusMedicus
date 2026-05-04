@@ -809,7 +809,7 @@ export default function App() {
       
                           <div className="flex-1 flex flex-col">
                             <p 
-                              className="font-bold text-black mb-6 whitespace-pre-wrap flex-none"
+                              className="font-normal text-black mb-6 whitespace-pre-wrap flex-none"
                               style={{ 
                                 fontSize: `${data.fontSettings.questionSize}px`,
                                 lineHeight: data.fontSettings.questionLineHeight
