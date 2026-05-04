@@ -113,6 +113,7 @@ export default function App() {
 
   const fileInputRef = useRef<HTMLInputElement>(null);
   const captureRef = useRef<HTMLDivElement>(null);
+  const questionTextareaRef = useRef<HTMLTextAreaElement>(null);
 
   const handleImageChange = (e: ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -447,10 +448,10 @@ export default function App() {
                   {/* Formatting Toolbar */}
                   <div className="flex gap-1.5 mb-2">
                     <button
-                      onClick={(e) => {
-                        const textarea = e.currentTarget.closest('div').querySelector('textarea');
-                        const start = textarea.selectionStart;
-                        const end = textarea.selectionEnd;
+                      onClick={() => {
+                        if (!questionTextareaRef.current) return;
+                        const start = questionTextareaRef.current.selectionStart;
+                        const end = questionTextareaRef.current.selectionEnd;
                         if (start === end) return; // No selection
                         
                         setData(prev => ({
@@ -470,10 +471,10 @@ export default function App() {
                       <Bold className="w-4 h-4" />
                     </button>
                     <button
-                      onClick={(e) => {
-                        const textarea = e.currentTarget.closest('div').querySelector('textarea');
-                        const start = textarea.selectionStart;
-                        const end = textarea.selectionEnd;
+                      onClick={() => {
+                        if (!questionTextareaRef.current) return;
+                        const start = questionTextareaRef.current.selectionStart;
+                        const end = questionTextareaRef.current.selectionEnd;
                         if (start === end) return; // No selection
                         
                         setData(prev => ({
@@ -493,10 +494,10 @@ export default function App() {
                       <Italic className="w-4 h-4" />
                     </button>
                     <button
-                      onClick={(e) => {
-                        const textarea = e.currentTarget.closest('div').querySelector('textarea');
-                        const start = textarea.selectionStart;
-                        const end = textarea.selectionEnd;
+                      onClick={() => {
+                        if (!questionTextareaRef.current) return;
+                        const start = questionTextareaRef.current.selectionStart;
+                        const end = questionTextareaRef.current.selectionEnd;
                         if (start === end) return; // No selection
                         
                         setData(prev => ({
@@ -536,6 +537,7 @@ export default function App() {
                   </div>
 
                   <textarea
+                    ref={questionTextareaRef}
                     value={data.question}
                     onChange={(e) => setData({ ...data, question: e.target.value })}
                     className="w-full bg-slate-50 border border-slate-200 rounded-lg px-4 py-3 min-h-[100px] font-medium text-sm resize-none"
