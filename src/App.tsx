@@ -897,33 +897,32 @@ export default function App() {
                             >
                               {(() => {
                                 const text = data.question;
-                                const segments = [];
-                                let lastIndex = 0;
+                                if (text.length === 0) return text;
                                 
-                                // Create segments for each character position
-                                for (let i = 0; i < text.length; i++) {
-                                  const formatting = {
-                                    bold: data.fontSettings.questionFormatting.bold.some(r => i >= r.start && i < r.end),
-                                    italic: data.fontSettings.questionFormatting.italic.some(r => i >= r.start && i < r.end),
-                                    underline: data.fontSettings.questionFormatting.underline.some(r => i >= r.start && i < r.end)
-                                  };
+                                // Build array of formatting for each character
+                                const charFormats = Array(text.length).fill(null).map((_, i) => ({
+                                  bold: data.fontSettings.questionFormatting.bold.some(r => i >= r.start && i < r.end),
+                                  italic: data.fontSettings.questionFormatting.italic.some(r => i >= r.start && i < r.end),
+                                  underline: data.fontSettings.questionFormatting.underline.some(r => i >= r.start && i < r.end)
+                                }));
+                                
+                                // Create segments with same formatting
+                                const segments = [];
+                                let current = { start: 0, ...charFormats[0] };
+                                
+                                for (let i = 1; i <= text.length; i++) {
+                                  const isSame = i < text.length && 
+                                    charFormats[i].bold === current.bold && 
+                                    charFormats[i].italic === current.italic && 
+                                    charFormats[i].underline === current.underline;
                                   
-                                  const prevFormatting = i === 0 ? { bold: false, italic: false, underline: false } : {
-                                    bold: data.fontSettings.questionFormatting.bold.some(r => (i - 1) >= r.start && (i - 1) < r.end),
-                                    italic: data.fontSettings.questionFormatting.italic.some(r => (i - 1) >= r.start && (i - 1) < r.end),
-                                    underline: data.fontSettings.questionFormatting.underline.some(r => (i - 1) >= r.start && (i - 1) < r.end)
-                                  };
-                                  
-                                  if (JSON.stringify(formatting) !== JSON.stringify(prevFormatting) && i > 0) {
-                                    segments.push({ start: lastIndex, end: i, ...prevFormatting });
-                                    lastIndex = i;
+                                  if (!isSame) {
+                                    segments.push({ ...current, end: i });
+                                    if (i < text.length) {
+                                      current = { start: i, ...charFormats[i] };
+                                    }
                                   }
                                 }
-                                segments.push({ start: lastIndex, end: text.length, ...{
-                                  bold: data.fontSettings.questionFormatting.bold.some(r => (text.length - 1) >= r.start && (text.length - 1) < r.end),
-                                  italic: data.fontSettings.questionFormatting.italic.some(r => (text.length - 1) >= r.start && (text.length - 1) < r.end),
-                                  underline: data.fontSettings.questionFormatting.underline.some(r => (text.length - 1) >= r.start && (text.length - 1) < r.end)
-                                }});
                                 
                                 return segments.map((seg, idx) => (
                                   <span 
@@ -932,8 +931,8 @@ export default function App() {
                                       fontWeight: seg.bold ? 'bold' : 'normal',
                                       fontStyle: seg.italic ? 'italic' : 'normal',
                                       textDecoration: seg.underline ? 'underline' : 'none',
-                                      textDecorationThickness: seg.underline ? '2px' : 'auto',
-                                      textUnderlineOffset: seg.underline ? '4px' : 'auto'
+                                      textDecorationThickness: '2px',
+                                      textUnderlineOffset: '4px'
                                     }}
                                   >
                                     {text.slice(seg.start, seg.end)}
