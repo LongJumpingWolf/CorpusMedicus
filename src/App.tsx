@@ -447,31 +447,70 @@ export default function App() {
                   {/* Formatting Toolbar */}
                   <div className="flex gap-1.5 mb-2">
                     <button
-                      onClick={() => setData(prev => ({
-                        ...prev,
-                        fontSettings: { ...prev.fontSettings, questionFormatting: { ...prev.fontSettings.questionFormatting, bold: prev.fontSettings.questionFormatting.bold.length > 0 ? [] : [{ start: 0, end: prev.question.length }] } }
-                      }))}
-                      className={`p-1.5 rounded-lg border transition-all ${data.fontSettings.questionFormatting.bold.length > 0 ? 'bg-blue-100 border-blue-400' : 'bg-white border-slate-200 hover:border-slate-300'}`}
+                      onClick={(e) => {
+                        const textarea = e.currentTarget.closest('div').querySelector('textarea');
+                        const start = textarea.selectionStart;
+                        const end = textarea.selectionEnd;
+                        if (start === end) return; // No selection
+                        
+                        setData(prev => ({
+                          ...prev,
+                          fontSettings: { 
+                            ...prev.fontSettings, 
+                            questionFormatting: { 
+                              ...prev.fontSettings.questionFormatting, 
+                              bold: [...prev.fontSettings.questionFormatting.bold, { start, end }]
+                            } 
+                          }
+                        }));
+                      }}
+                      className="p-1.5 rounded-lg border bg-white border-slate-200 hover:border-slate-300 transition-all"
                       title="Bold"
                     >
                       <Bold className="w-4 h-4" />
                     </button>
                     <button
-                      onClick={() => setData(prev => ({
-                        ...prev,
-                        fontSettings: { ...prev.fontSettings, questionFormatting: { ...prev.fontSettings.questionFormatting, italic: prev.fontSettings.questionFormatting.italic.length > 0 ? [] : [{ start: 0, end: prev.question.length }] } }
-                      }))}
-                      className={`p-1.5 rounded-lg border transition-all ${data.fontSettings.questionFormatting.italic.length > 0 ? 'bg-blue-100 border-blue-400' : 'bg-white border-slate-200 hover:border-slate-300'}`}
+                      onClick={(e) => {
+                        const textarea = e.currentTarget.closest('div').querySelector('textarea');
+                        const start = textarea.selectionStart;
+                        const end = textarea.selectionEnd;
+                        if (start === end) return; // No selection
+                        
+                        setData(prev => ({
+                          ...prev,
+                          fontSettings: { 
+                            ...prev.fontSettings, 
+                            questionFormatting: { 
+                              ...prev.fontSettings.questionFormatting, 
+                              italic: [...prev.fontSettings.questionFormatting.italic, { start, end }]
+                            } 
+                          }
+                        }));
+                      }}
+                      className="p-1.5 rounded-lg border bg-white border-slate-200 hover:border-slate-300 transition-all"
                       title="Italic"
                     >
                       <Italic className="w-4 h-4" />
                     </button>
                     <button
-                      onClick={() => setData(prev => ({
-                        ...prev,
-                        fontSettings: { ...prev.fontSettings, questionFormatting: { ...prev.fontSettings.questionFormatting, underline: prev.fontSettings.questionFormatting.underline.length > 0 ? [] : [{ start: 0, end: prev.question.length }] } }
-                      }))}
-                      className={`p-1.5 rounded-lg border transition-all ${data.fontSettings.questionFormatting.underline.length > 0 ? 'bg-blue-100 border-blue-400' : 'bg-white border-slate-200 hover:border-slate-300'}`}
+                      onClick={(e) => {
+                        const textarea = e.currentTarget.closest('div').querySelector('textarea');
+                        const start = textarea.selectionStart;
+                        const end = textarea.selectionEnd;
+                        if (start === end) return; // No selection
+                        
+                        setData(prev => ({
+                          ...prev,
+                          fontSettings: { 
+                            ...prev.fontSettings, 
+                            questionFormatting: { 
+                              ...prev.fontSettings.questionFormatting, 
+                              underline: [...prev.fontSettings.questionFormatting.underline, { start, end }]
+                            } 
+                          }
+                        }));
+                      }}
+                      className="p-1.5 rounded-lg border bg-white border-slate-200 hover:border-slate-300 transition-all"
                       title="Underline"
                     >
                       <Underline className="w-4 h-4" />
@@ -851,15 +890,54 @@ export default function App() {
                               className="font-bold text-black mb-6 whitespace-pre-wrap flex-none"
                               style={{ 
                                 fontSize: `${data.fontSettings.questionSize}px`,
-                                lineHeight: data.fontSettings.questionLineHeight,
-                                fontWeight: data.fontSettings.questionFormatting.bold.length > 0 ? 'bold' : 'normal',
-                                fontStyle: data.fontSettings.questionFormatting.italic.length > 0 ? 'italic' : 'normal',
-                                textDecoration: data.fontSettings.questionFormatting.underline.length > 0 ? 'underline' : 'none',
-                                textDecorationThickness: '2px',
-                                textUnderlineOffset: '4px'
+                                lineHeight: data.fontSettings.questionLineHeight
                               }}
                             >
-                              {data.question}
+                              {(() => {
+                                const text = data.question;
+                                const segments = [];
+                                let lastIndex = 0;
+                                
+                                // Create segments for each character position
+                                for (let i = 0; i < text.length; i++) {
+                                  const formatting = {
+                                    bold: data.fontSettings.questionFormatting.bold.some(r => i >= r.start && i < r.end),
+                                    italic: data.fontSettings.questionFormatting.italic.some(r => i >= r.start && i < r.end),
+                                    underline: data.fontSettings.questionFormatting.underline.some(r => i >= r.start && i < r.end)
+                                  };
+                                  
+                                  const prevFormatting = i === 0 ? { bold: false, italic: false, underline: false } : {
+                                    bold: data.fontSettings.questionFormatting.bold.some(r => (i - 1) >= r.start && (i - 1) < r.end),
+                                    italic: data.fontSettings.questionFormatting.italic.some(r => (i - 1) >= r.start && (i - 1) < r.end),
+                                    underline: data.fontSettings.questionFormatting.underline.some(r => (i - 1) >= r.start && (i - 1) < r.end)
+                                  };
+                                  
+                                  if (JSON.stringify(formatting) !== JSON.stringify(prevFormatting) && i > 0) {
+                                    segments.push({ start: lastIndex, end: i, ...prevFormatting });
+                                    lastIndex = i;
+                                  }
+                                }
+                                segments.push({ start: lastIndex, end: text.length, ...{
+                                  bold: data.fontSettings.questionFormatting.bold.some(r => (text.length - 1) >= r.start && (text.length - 1) < r.end),
+                                  italic: data.fontSettings.questionFormatting.italic.some(r => (text.length - 1) >= r.start && (text.length - 1) < r.end),
+                                  underline: data.fontSettings.questionFormatting.underline.some(r => (text.length - 1) >= r.start && (text.length - 1) < r.end)
+                                }});
+                                
+                                return segments.map((seg, idx) => (
+                                  <span 
+                                    key={idx}
+                                    style={{
+                                      fontWeight: seg.bold ? 'bold' : 'normal',
+                                      fontStyle: seg.italic ? 'italic' : 'normal',
+                                      textDecoration: seg.underline ? 'underline' : 'none',
+                                      textDecorationThickness: seg.underline ? '2px' : 'auto',
+                                      textUnderlineOffset: seg.underline ? '4px' : 'auto'
+                                    }}
+                                  >
+                                    {text.slice(seg.start, seg.end)}
+                                  </span>
+                                ));
+                              })()}
                             </p>
           
                             <div 
